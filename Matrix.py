@@ -1,6 +1,7 @@
 # Refer: https://pypi.org/project/multimethod/
 # for multimethod docs
 from multimethod import *
+from copy import deepcopy
 
 class Matrix:
 
@@ -23,7 +24,6 @@ class Matrix:
 		self._grid = mat
 		self._rows = len(self._grid)
 		self._cols = len(self._grid[0])
-		return
 
 	def __neg__(self): 
 		# unary minus
@@ -67,7 +67,7 @@ class Matrix:
 	def __setitem__(self, idx, val):
 		self._grid[idx] = val
 
-	def __str__(self):
+	def __repr__(self):
 		return '\n'.join(str(row) for row in self._grid) + '\n'
 
 	def transpose(self):
@@ -79,25 +79,27 @@ class Matrix:
 
 		return res
 
+	def to_nested_list(self):
+		return deepcopy(self._grid)
+
 	@property
 	def dims(self):
 		return (self._rows, self._cols)
 
 
-"""
-# matmul test
-mat1 = [
-	[-1, 2, -3],
-	[4, -5, 6],
-]
-mat2 = [
-	[3, -4],
-	[2, 1],
-	[-1, 0],
-]
+if __name__ == '__main__':
+	# matmul test
+	mat1 = [
+		[-1, 2, -3],
+		[4, -5, 6],
+	]
+	mat2 = [
+		[3, -4],
+		[2, 1],
+		[-1, 0],
+	]
 
-one = Matrix(mat1)
-two = Matrix(mat2)
-print(one * two) 
-print(Matrix([[4, 6], [-4, -21]]))
-"""
+	one = Matrix(mat1)
+	two = Matrix(mat2)
+	print(one * two) 
+	print(Matrix([[4, 6], [-4, -21]]))
