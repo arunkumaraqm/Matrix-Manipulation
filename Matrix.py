@@ -1,14 +1,20 @@
+"""
+Contains the class Matrix
+"""
+
 # Refer: https://pypi.org/project/multimethod/
 # for multimethod docs
 from multimethod import *
 from copy import deepcopy
 
 class Matrix:
+
 	"""
-	This is a class for mathematical operations on complex numbers. 
-      
-    Attributes: 
-    	
+	A class for 2D matrices supporting basic matrix operations.
+	Attributes:
+		_rows (int)
+		_cols (int)
+		_grid (list of lists): contains the elements of the matrix
 	"""
 
 	# Constructor overloading using decorators 
@@ -18,6 +24,14 @@ class Matrix:
 				 rows: int, 
 				 cols: int, 
 				 fill_value = 0):
+		"""
+		Constructor #1
+		
+		Args:
+		    rows (int): no. of rows
+		    cols (int): no. of columns
+		    fill_value (int, optional): value to populate matrix with; defaults to 0
+		"""
 		self._rows = rows
 		self._cols = cols
 		self._grid = [[fill_value 
@@ -27,20 +41,42 @@ class Matrix:
 	@__init__.register
 	def __init__(self, 
 				 mat: list):
-		self._grid = mat
+		"""
+		Constructor #2
+		
+		Args:
+		    mat (list): a list of lists containing elements
+		"""
+		self._grid = deepcopy(mat)
 		self._rows = len(self._grid)
 		self._cols = len(self._grid[0])
 
 	def __neg__(self): 
-		# unary minus
+		"""
+		Unary minus operator
+		
+		Returns:
+		    Matrix
+		"""
 		res = Matrix(self._rows, self._cols)
 		for i in range(self._rows):
 			for j in range(self._cols):
 				res[i][j] = -self[i][j]
 		return res
 
-	# operator overloading
 	def __add__(self, other): 
+		"""
+		Addition operator.
+		
+		Args:
+		    other (Matrix): Second operand
+		
+		Returns:
+		    Matrix: sum
+		
+		Raises:
+		    ValueError: Matrices have different dimensions
+		"""
 		if self.dims != other.dims:
 			raise ValueError("Matrices have different dimensions")
 
@@ -52,9 +88,33 @@ class Matrix:
 		return summ
 
 	def __sub__(self, other):
+		"""
+		Subtraction operator.
+		
+		Args:
+		    other (Matrix): Second operand
+		
+		Returns:
+		    Matrix: difference
+		
+		Raises:
+		    ValueError: Matrices have different dimensions
+		"""
 		return self + (-other)
 
 	def __truediv__(self, scalar):
+		"""
+		Division operator.
+		
+		Args:
+		    scalar (number)
+		
+		Returns:
+		    Matrix: quotient
+		
+		Raises:
+		    ZeroDivisionError: Cannot divide by zero.
+		"""
 		if scalar == 0:
 			raise ZeroDivisionError("Cannot divide by zero.")
 		res = Matrix(self._rows, self._cols)
@@ -64,6 +124,19 @@ class Matrix:
 		return res
 
 	def __mul__(self, other):
+		"""
+		Matrix Multiplication
+		
+		Args:
+		    other (Matrix): Second operand
+		
+		Returns:
+		    Matrix: product
+		
+		Raises:
+		    ValueError: Matrices not compatible for multiplication.
+		"""
+		#TODO Scalar mul
 		r1, c1 = self.dims
 		r2, c2 = other.dims
 		if c1 != r2:
@@ -76,16 +149,41 @@ class Matrix:
 					res[i][j] += self[i][k] * other[k][j]
 		return res
 
-	def __getitem__(self, idx):	
+	def __getitem__(self, idx: int):	
+		"""
+		
+		Args:
+		    idx (int): index
+		
+		Returns:
+		    list: row indicated by idx
+		"""
 		return self._grid[idx]
 	
-	def __setitem__(self, idx, val):
+	def __setitem__(self, idx: int, val):
+		"""
+		
+		Args:
+		    idx (int): index
+		    val (number)
+		"""
 		self._grid[idx] = val
 
 	def __repr__(self):
+		"""Summary
+		
+		Returns:
+		    TYPE: Description
+		"""
 		return '\n'.join(str(row) for row in self._grid) + '\n'
 
 	def transpose(self):
+		"""
+		Transpose of the matrix.
+		
+		Returns:
+		    Matrix
+		"""
 		res = Matrix(self._cols, self._rows)
 
 		for i in range(self._rows):
@@ -95,26 +193,19 @@ class Matrix:
 		return res
 
 	def to_nested_list(self):
+		"""
+		
+		Returns:
+		    list: copy of _grid
+		"""
 		return deepcopy(self._grid)
 
 	@property
 	def dims(self):
+		"""
+		Dimensions
+		
+		Returns:
+		    tuple
+		"""
 		return (self._rows, self._cols)
-
-
-if __name__ == '__main__':
-	# matmul test
-	mat1 = [
-		[-1, 2, -3],
-		[4, -5, 6],
-	]
-	mat2 = [
-		[3, -4],
-		[2, 1],
-		[-1, 0],
-	]
-
-	one = Matrix(mat1)
-	two = Matrix(mat2)
-	print(one * two) 
-	print(Matrix([[4, 6], [-4, -21]]))
