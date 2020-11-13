@@ -70,32 +70,34 @@ class SquareMatrix(Matrix):
 			summ += self._grid[i][i]
 		return summ
 
+	def minor(self, row_number, col_number):
+		if 	not(0 <= row_number < self._rows) or \
+			not(0 <= col_number < self._cols): 
+			raise IndexError("One or both indices out of range.")
+
+		submat = SquareMatrix(self._rows - 1)
+
+		# submat = self without row `row_number` and col `col_number`
+		included_row_nos = list(range(self._rows)); del included_row_nos[row_number]
+		included_col_nos = list(range(self._cols)); del included_col_nos[col_number]
+
+		for i_submat, i_mat in zip(range(submat._rows), iter(included_row_nos)):
+			for j_submat, j_mat in zip(range(submat._rows), iter(included_col_nos)):
+				submat[i_submat][j_submat] = self[i_mat][j_mat]
+		
+		return submat.det()
+
+
 	def adj(self):
-		pass
+		res = SquareMatrix(self._rows)
+		for i in range(self._rows):
+			for j in range(self._rows):
+				res[i][j] = ((-1) ** (i + j)) * self.minor(j, i)
+		return res
 
 	def inv(self):
-		pass
-
-if __name__ == '__main__':
-
-	from numpy.linalg import det as npdet
-	mat = SquareMatrix([
-			[1, 2],
-			[3, 4]
-			])
-	print(mat.det(), npdet(mat.to_nested_list()))
-
-	mat = SquareMatrix([
-			[1, 2, 3],
-			[4, 5, 6],
-			[7, 8, 9],
-			])
-	print(mat.det(), npdet(mat.to_nested_list()))
-
-	mat = SquareMatrix([
-			[1, 2, 4, 2],
-			[3, 4, 93, 10],
-			[28, 34, 12, 90],
-			[29, 3, 0, 1],
-			])
-	print(mat.det(), npdet(mat.to_nested_list()))
+		determinant = self.det()
+		if determinant:
+			return self.adj() / determinant
+		else:
+			raise ValueError("Not Invertible")

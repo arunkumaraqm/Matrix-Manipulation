@@ -4,6 +4,12 @@ from multimethod import *
 from copy import deepcopy
 
 class Matrix:
+	"""
+	This is a class for mathematical operations on complex numbers. 
+      
+    Attributes: 
+    	
+	"""
 
 	# Constructor overloading using decorators 
 	# from third party library called multimethod
@@ -34,7 +40,7 @@ class Matrix:
 		return res
 
 	# operator overloading
-	def __add__(self, other):
+	def __add__(self, other): 
 		if self.dims != other.dims:
 			raise ValueError("Matrices have different dimensions")
 
@@ -47,6 +53,15 @@ class Matrix:
 
 	def __sub__(self, other):
 		return self + (-other)
+
+	def __truediv__(self, scalar):
+		if scalar == 0:
+			raise ZeroDivisionError("Cannot divide by zero.")
+		res = Matrix(self._rows, self._cols)
+		for i in range(self._rows):
+			for j in range(self._cols):
+				res[i][j] = self[i][j] / scalar
+		return res
 
 	def __mul__(self, other):
 		r1, c1 = self.dims
